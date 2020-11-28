@@ -6,12 +6,24 @@
         <img src="../assets/logo.png" />
       </div>
 
-      <el-form ref="loginFormRef" class="login_form" :model="loginForm" :rules="loginFormRules">
+      <el-form
+        ref="loginFormRef"
+        class="login_form"
+        :model="loginForm"
+        :rules="loginFormRules"
+      >
         <el-form-item prop="username">
-          <el-input prefix-icon="el-icon-user" v-model="loginForm.username"></el-input>
+          <el-input
+            prefix-icon="el-icon-user"
+            v-model="loginForm.username"
+          ></el-input>
         </el-form-item>
         <el-form-item prop="password">
-          <el-input prefix-icon="el-icon-lock" v-model="loginForm.password" type="password"></el-input>
+          <el-input
+            prefix-icon="el-icon-lock"
+            v-model="loginForm.password"
+            type="password"
+          ></el-input>
         </el-form-item>
         <el-form-item class="btns">
           <el-button type="primary" @click="login">登录</el-button>
@@ -25,42 +37,49 @@
 <script>
 // import {message} from "element-ui"
 export default {
-  data(){
+  data() {
     return {
-      loginForm:{
-        username:"oliver",
-        password:"szh432806"
+      loginForm: {
+        username: "admin",
+        password: "123456",
       },
-      loginFormRules:{
-        username:[
-          { required: true, message: '请输入登录名称', trigger: 'blur' },
-          { min: 3, max: 10, message: '长度在 3 到 10个字符', trigger: 'blur' }
+      loginFormRules: {
+        username: [
+          { required: true, message: "请输入登录名称", trigger: "blur" },
+          { min: 3, max: 10, message: "长度在 3 到 10个字符", trigger: "blur" },
         ],
-        password : [
-          { required: true, message: '请输入密码', trigger: 'blur' },
-          { min: 3, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }
-        ]
-      }
-    }
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          {
+            min: 3,
+            max: 15,
+            message: "长度在 6 到 15 个字符",
+            trigger: "blur",
+          },
+        ],
+      },
+    };
   },
-  methods : {
-    reset(){
+  methods: {
+    reset() {
       this.$refs.loginFormRef.resetFields();
-      this.loginForm.username=this.loginForm.password="";
+      this.loginForm.username = this.loginForm.password = "";
     },
-    login(){
-      this.$refs.loginFormRef.validate( async valid=>{
-        if(!valid)return;
+    login() {
+      this.$refs.loginFormRef.validate(async (valid) => {
+        if (!valid) return;
         //发请求
-        const {data : res}=await this.$http.post("api/AddStudent",this.loginForm);
-        const result=JSON.parse(res);
-        //if(result.Status=="no")return this.$message.error("登录失败")
-        this.$message.success("登录成功！");
-        window.sessionStorage.setItem("token","q123ewQ!@#EW");
-        this.$router.push("/home");
+        const { data: res } = await this.$http.post("login", this.loginForm);
+        if (res.meta.status === 200) {
+          this.$message.success("登录成功！");
+          window.sessionStorage.setItem("token", res.data.token);
+          this.$router.push("/home");
+        } else {
+          this.$message.error("登录失败");
+        }
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -96,13 +115,13 @@ export default {
       background-color: #eee;
     }
   }
-  .login_form{
+  .login_form {
     position: absolute;
     bottom: 0;
-    width : 100%;
-    padding : 20px;
+    width: 100%;
+    padding: 20px;
     box-sizing: border-box;
-    .btns{
+    .btns {
       display: flex;
       justify-content: flex-end;
     }
