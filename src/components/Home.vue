@@ -18,6 +18,8 @@
           unique-opened
           :collapse="isCollapse"
           :collapse-transition="false"
+          router
+          :default-active="$route.path"
         >
           <!-- 一级菜单 -->
           <el-submenu :index="menu.id.toString()" v-for="menu in menuList" :key="menu.id">
@@ -27,7 +29,7 @@
             </template>
 
             <!-- 二级菜单 -->
-            <el-menu-item :index="submenu.id.toString()" v-for="submenu in menu.children" :Key="submenu.id">
+            <el-menu-item :index="'/home/'+submenu.path" v-for="submenu in menu.children" :key="submenu.id">
               <template slot="title">
               <i class="el-icon-menu"></i>
               <span>{{submenu.authName}}</span>
@@ -39,7 +41,9 @@
         </el-menu>
       </el-aside>
 
-      <el-main>Main</el-main>
+      <el-main>
+        <router-view></router-view>
+      </el-main>
     </el-container>
 
   </el-container>
@@ -69,7 +73,7 @@ export default {
       const {data:res} = await this.$http.get("menus");
       if(res.meta.status!==200) return this.$message.error(res.meta.msg);
       this.menuList=res.data;
-      console.log(res);
+      //console.log(res);
     }
   },
   created(){
