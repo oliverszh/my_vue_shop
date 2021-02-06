@@ -4,14 +4,16 @@
     <el-breadcrumb separator=">">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>商品管理</el-breadcrumb-item>
-      <el-breadcrumb-item>商品列表</el-breadcrumb-item>
+      <el-breadcrumb-item>商品分类</el-breadcrumb-item>
     </el-breadcrumb>
 
     <el-card>
       <!-- 添加商品 -->
       <el-row>
         <el-col>
-          <el-button type="primary" @click="showAddCateDialog">添加分类</el-button>
+          <el-button type="primary" @click="showAddCateDialog"
+            >添加分类</el-button
+          >
         </el-col>
       </el-row>
 
@@ -101,9 +103,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="addCartDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addCart"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="addCart">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -152,9 +152,9 @@ export default {
         //将要添加分类的名称
         cat_name: "",
         //父级分类的Id
-        cat_pid : 0,
+        cat_pid: 0,
         //分类的等级，默认要添加的是1级分类
-        cat_level : 0
+        cat_level: 0,
       },
       addCartFormRules: {
         cat_name: [
@@ -162,14 +162,14 @@ export default {
         ],
       },
       parentCateList: [],
-      cascadarProps : {
-         expandTrigger : "hover", 
-         value : "cat_id",
-         label : "cat_name",
-         children : "children",
-         checkStrictly: true
+      cascadarProps: {
+        expandTrigger: "hover",
+        value: "cat_id",
+        label: "cat_name",
+        children: "children",
+        checkStrictly: true,
       },
-      selectKeys : []
+      selectKeys: [],
     };
   },
   created() {
@@ -211,35 +211,35 @@ export default {
       this.parentCateList = data.data;
       //console.log(this.parentCateList);
     },
-    parentCateChanged(){
-        if(this.selectKeys.length>0){
-            this.addCartForm.cat_pid=this.selectKeys[this.selectKeys.length-1];
-            this.addCartForm.cat_level=this.selectKeys.length;
-            return;
-        }else{
-            this.addCartForm.cat_pid=0;
-            this.addCartForm.cat_level=0;
+    parentCateChanged() {
+      if (this.selectKeys.length > 0) {
+        this.addCartForm.cat_pid = this.selectKeys[this.selectKeys.length - 1];
+        this.addCartForm.cat_level = this.selectKeys.length;
+        return;
+      } else {
+        this.addCartForm.cat_pid = 0;
+        this.addCartForm.cat_level = 0;
+      }
+      //console.log(this.selectKeys);
+    },
+    addCateDialogClosed() {
+      this.$refs.addCartFormRef.resetFields();
+      this.selectKeys = [];
+      this.addCartForm.cat_level = 0;
+      this.addCartForm.cat_pid = 0;
+    },
+    addCart() {
+      this.$refs.addCartFormRef.validate(async (valid) => {
+        if (!valid) return;
+        const { data } = await this.$http.post("categories", this.addCartForm);
+        if (data.meta.status !== 201) {
+          return this.$message.error(data.meta.msg);
         }
-        //console.log(this.selectKeys);
+        this.$message.success("添加分类成功!");
+        this.getCateList();
+        this.addCartDialogVisible = false;
+      });
     },
-    addCateDialogClosed(){
-        this.$refs.addCartFormRef.resetFields();
-        this.selectKeys=[];
-        this.addCartForm.cat_level=0;
-        this.addCartForm.cat_pid=0;
-    },
-    addCart(){
-        this.$refs.addCartFormRef.validate(async valid=>{
-            if(!valid) return;
-            const {data}=await this.$http.post("categories",this.addCartForm);
-            if(data.meta.status!==201){
-                return this.$message.error(data.meta.msg);
-            }
-            this.$message.success("添加分类成功!");
-            this.getCateList();
-            this.addCartDialogVisible=false;
-        });
-    }
   },
 };
 </script>
@@ -247,7 +247,7 @@ export default {
 .treeTable {
   margin-top: 15px;
 }
-.el-cascader{
-    width : 100%;
+.el-cascader {
+  width: 100%;
 }
 </style>
